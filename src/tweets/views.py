@@ -1,15 +1,28 @@
 from django.shortcuts import render
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, CreateView
+
 from .models import Tweet
+
+from .forms import TweetModelForm
 # Create your views here.
 
+
+class TweetCreateView(CreateView):
+	form_class = TweetModelForm
+	template_name = 'create_view.html'
+	success_url = '/tweet/create/'
+
+	def form_valid(self, form):
+		form.instance.user = self.request.user
+		return super(TweetCreateView, self).form_valid(form)
 
 class TweetDetailView(DetailView):
 	template_name = "detail_view.html"
 	queryset = Tweet.objects.all()
 
 	def get_object(self):
-		return Tweet.objects.get(id=1)
+		id = self.kwargs.get("id")
+		return Tweet.objects.get(id=id)
 
 class TweetListView(ListView):
 	template_name = "list_view.html"
