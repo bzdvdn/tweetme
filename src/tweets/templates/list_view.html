@@ -64,26 +64,58 @@
 
 		fetchTweets()
 		
+		var charsStart = 140;
+		var charsCurrent = 0;
+		$("#tweet-form").append("<span id='tweetCharsLeft'>" + charsStart + "</span>")
+
+		$("#tweet-form textarea").keyup(function(event){
+			// console.log(event)
+			var tweetValue = $(this).val()
+			charsCurrent = charsStart - tweetValue.length
+			var spanChars = $("#tweetCharsLeft")
+			spanChars.text(charsCurrent)
+
+			if (charsCurrent > 0) {
+				spanChars.removeClass("grey-color")
+				spanChars.removeClass("red-color")
+				// reemove classes
+			} else if (charsCurrent == 0) {
+				//add gray class
+				spanChars.removeClass("red-color")
+				spanChars.addClass("grey-color")
+			} else if (charsCurrent < 0) {
+				// add red class
+				spanChars.removeClass("grey-color")
+				spanChars.addClass("red-color")
+			}
+		})
+
 		$("#tweet-form").submit(function(event){
 			event.preventDefault()
 			var ths = $(this)
 			var formData = ths.serialize()
-			$.ajax({
-				url: "/api/tweet/create/",
-				method: "POST",
-				data: formData,
-				success: function(data) {
-					ths.find("textarea").val("")
-					attachTweet(data, true)
-					// console.log(data)
-					//tweetList = data
-					//parseTweets()
-					// fetchTweets()
-				},
-				error: function(data){
-					console.log("error")
-				}
-			})
+
+			if (charsCurrent >= 0) {
+					$.ajax({
+					url: "/api/tweet/create/",
+					method: "POST",
+					data: formData,
+					success: function(data) {
+						ths.find("textarea").val("")
+						attachTweet(data, true)
+						// console.log(data)
+						//tweetList = data
+						//parseTweets()
+						// fetchTweets()
+					},
+					error: function(data){
+						console.log("error")
+					}
+				})
+			} else {
+				console.log("aasada")
+			}
+			
 
 
 			
