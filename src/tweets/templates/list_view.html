@@ -20,17 +20,26 @@
 		var query = getParameterByName('q')
 		var tweetList = [];
 
+		function attachTweet(tweetValue, prepend){
+			var dateDisplay = tweetValue.date_display
+			var tweetContent = tweetValue.content
+			var tweetUser = tweetValue.user
+			var tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via " + tweetUser.username + " | " + dateDisplay + " | "  + "<a href='#'>View</a>" +  "</div></div><hr/>"
+			if (prepend == true){
+				$("#tweet-container").prepend(tweetFormattedHtml)
+			} else {
+				$("#tweet-container").append(tweetFormattedHtml)
+			}
+			
+		}
+
 		function parseTweets() {
 			if (tweetList == 0) {
 				$("#tweet-container").text("No tweets currently found.")
 			} else {
 				$.each(tweetList, function(key, value){
 					var tweetKey = key
-					var tweetContent = value.content
-					var tweetUser = value.user
-					$("#tweet-container").append(
-							"<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via " + tweetUser.username + " | " + "<a href='#'>View</a>" +  "</div></div><hr/>"
-						)
+					attachTweet(value)
 				})
 			}
 		}
@@ -64,10 +73,12 @@
 				method: "POST",
 				data: formData,
 				success: function(data) {
+					ths.find("textarea").val("")
+					attachTweet(data, true)
 					// console.log(data)
 					//tweetList = data
 					//parseTweets()
-					fetchTweets()
+					// fetchTweets()
 				},
 				error: function(data){
 					console.log("error")
