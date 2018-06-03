@@ -19,6 +19,7 @@
 
 		var query = getParameterByName('q')
 		var tweetList = [];
+		var nextTweetUrl; 
 
 		function attachTweet(tweetValue, prepend){
 			var dateDisplay = tweetValue.date_display
@@ -44,16 +45,28 @@
 			}
 		}
 
-		function fetchTweets() {
+		function fetchTweets(url) {
+			var fetchUrl;
+			if (!url) {
+				fetchUrl = "/api/tweet/"
+			} else {
+				fetchUrl = url
+			}
+
 			$.ajax({
-			url: "/api/tweet/",
+			url: fetchUrl,
 			method: "GET",
 			data: {
 				"q": query
 			},
 			success: function(data) {
 				// console.log(data)
-				tweetList = data
+				tweetList = data.results
+				if (data.next) {
+					nextTweetUrl = data.next
+				} else {
+					$("#loadmore").css("display", "none")
+				}
 				parseTweets()
 			},
 			error: function(data){
@@ -63,6 +76,13 @@
 		}
 
 		fetchTweets()
+
+		$("#loadmore").click(function(event){
+			event.preventDefault()
+			if (nextTweetUrl) {
+				fetchTweets(nextTweetUrl)
+			}
+		})
 		
 		var charsStart = 140;
 		var charsCurrent = 0;
@@ -143,7 +163,8 @@
 
 		<div id="tweet-container">
 	
-		</div>	
+		</div>
+		<a href="#" id="loadmore">Load more Tweets</a>	
 		</div>
 	</div>
 {% endblock content %}
