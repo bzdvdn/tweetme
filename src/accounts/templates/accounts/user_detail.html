@@ -1,5 +1,20 @@
 {% extends "_base.html" %}
 
+
+{% block script %}
+<script>
+
+	
+
+	$(document).ready(function(){
+		loadTweetContainer("tweet-container")
+	});
+
+
+</script>
+{% endblock script %}
+
+
 {% block content %}
 <div class="row">
 	<div class="col-sm-3 col-xs-12">
@@ -9,13 +24,6 @@
 		<p><a class="btn btn-link" href="{% url 'profiles:follow' username=object.username %}">
 			{% if following %} UnFollow {% else %} Follow {% endif %}
 			</a></p>
-	</div>
-	<div class="col-sm-9 col-xs-12">
-		<h1>Tweets </h1>
-		{% for tweet in object.tweet_set.all %}
-			{{ tweet }}<br/>
-		{% endfor %}
-		
 		<hr/>
 		<h1>Following <small>{{ object.profile.get_following.count }}</small></h1>
 		{% for user in object.profile.get_following %}
@@ -31,6 +39,16 @@
 		{% empty %}
 		<h4>Not followed by any users.</h4>
 		{% endfor %}
+	</div>
+	<div class="col-sm-9 col-xs-12">
+		<h1>Tweets </h1>
+		<div id="tweet-container" data-url="/api/{{ object.username }}/tweet/">
+	
+		</div>
+			<a href="#" id="loadmore">Load more Tweets</a>	
+		</div>
+		
+		
 	</div>
 	
 </div>

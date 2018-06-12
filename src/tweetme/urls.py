@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^profiles/', include('accounts.urls', namespace='profiles')),
     url(r'^tweet/', include('tweets.urls', namespace='tweet')),
     url(r'^api/tweet/', include('tweets.api.urls', namespace='tweet-api')),
+    url(r'^api/', include('accounts.api.urls', namespace='profiles-api')),
 ]
 
 if settings.DEBUG:
