@@ -23,7 +23,7 @@
 		<div class="col-sm-9 ">
 		{% if not request.GET.q %}
 			<div class="">
-				{% include "form.html" with form=create_form action_url=create_url btn_title="Tweeet" form_id="tweet-form"%}
+				{% include "form.html" with form=create_form action_url=create_url btn_title="Tweeet" form_class="tweet-form"%}
 			</div>
 			<hr/>
 		{% endif %}	

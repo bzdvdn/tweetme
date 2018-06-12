@@ -34,7 +34,7 @@
       {% block content %}
       {% endblock content %}
     </div>
-
+    {% include "reply-modal.html" %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script>
@@ -85,6 +85,36 @@
       })
     })
 
+    $(document.body).on("click", ".tweet-reply", function(event){
+      event.preventDefault()
+      var this_ = $(this)
+      var parentId = this_.attr("data-id")
+      var username = this_.attr("data-user")
+      $("#replyModal").modal({})
+      $("#replyModal textarea").val("@" + username + " ")
+      $("#replyModal").on("shown.bs.modal", function(){
+        $("textarea").focus()
+      })
+
+      // var url = "/api" + $(this).attr("href")
+      // $.ajax({
+      //   method: "GET",
+      //   url: url,
+      //   success: function(data){
+      //     console.log("ok")
+      //     if (initialURL == "/api/tweet/") {
+      //       attachTweet(data, true, true)
+      //       updateHashLinks()
+      //     }
+          
+      //   }, 
+      //   error: function(data){
+      //     console.log("error")
+      //   }
+      // })
+    })
+
+
 
     $(document.body).on("click", ".retweetBtn", function(event){
       event.preventDefault()
@@ -131,7 +161,7 @@
 
       if (tweetValue.parent && !isReply) {
         tweetValue = tweetValue.parent
-        preContent = "<span class='grey-color'>Retweet via <a href='" + tweetValue.url + "'>" + tweetValue.username + "</a>" + " on " + tweetValue.date_display + "</span><br/>"
+        preContent = "<span class='grey-color'>Retweet via <a href='" + tweetValue.user.url + "'>" + tweetValue.user.username + "</a>" + " on " + tweetValue.date_display + "</span><br/>"
       } else if (tweetValue.parent && isReply){
         preContent = "<span class='grey-color'>Reply to @ <a href='" + tweetValue.parent.user.url + "'>" + tweetValue.parent.user.username + "</a></span><br/>"
       }
@@ -140,7 +170,7 @@
         verb = 'Unlike'
       }
 
-      tweetContent = tweetValue.content + "<br/> via <a href='" + tweetValue.user.url + "'>" + tweetValue.user.username + "</a> | " + tweetValue.date_display + " | "  + "<a href='/tweet/" + tweetValue.id + "'" + ">View</a> | " + "<a class='retweetBtn' href='/tweet/" + tweetValue.id + "/retweet/'" + ">Retweet</a> | " + "<a class='tweet-like' href='#' data-id="+ tweetValue.id +">" + verb +" (" + tweetValue.likes + ")</a><a class='tweet-reply' href='#' data-id="+ tweetValue.id +"> | Reply</a>"
+      tweetContent = tweetValue.content + "<br/> via <a href='" + tweetValue.user.url + "'>" + tweetValue.user.username + "</a> | " + tweetValue.date_display + " | "  + "<a href='/tweet/" + tweetValue.id + "'" + ">View</a> | " + "<a class='retweetBtn' href='/tweet/" + tweetValue.id + "/retweet/'" + ">Retweet</a> | " + "<a class='tweet-like' href='#' data-id='"+ tweetValue.id +"'>" + verb +" (" + tweetValue.likes + ")</a><a class='tweet-reply' href='#' data-id="+ tweetValue.id +" data-user='"+ tweetValue.user.username +"'> | Reply</a>"
 
       if (preContent) {
         container = "<div class=\"media\"><div class=\"media-body\">" + preContent + tweetContent +"</div></div><hr/>"
@@ -220,13 +250,13 @@
     
     var charsStart = 140;
     var charsCurrent = 0;
-    $("#tweet-form").append("<span id='tweetCharsLeft'>" + charsStart + "</span>")
+    $(".tweet-form").append("<span class='tweetCharsLeft'>" + charsStart + "</span>")
 
-    $("#tweet-form textarea").keyup(function(event){
+    $(".tweet-form textarea").keyup(function(event){
       // console.log(event)
       var tweetValue = $(this).val()
       charsCurrent = charsStart - tweetValue.length
-      var spanChars = $("#tweetCharsLeft")
+      var spanChars = $(this).parent().parent().parent().find(".tweetCharsLeft")
       spanChars.text(charsCurrent)
 
       if (charsCurrent > 0) {
@@ -244,7 +274,7 @@
       }
     })
 
-    $("#tweet-form").submit(function(event){
+    $(".tweet-form").submit(function(event){
       event.preventDefault()
       var ths = $(this)
       var formData = ths.serialize()
@@ -262,6 +292,7 @@
             //tweetList = data
             //parseTweets()
             // fetchTweets()
+            $("#replyModal").modal("hide")
           },
           error: function(data){
             console.log("error")
