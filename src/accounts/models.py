@@ -37,6 +37,12 @@ class UserProfileManager(models.Manager):
 			return True
 		return False
 
+	def recommended(self, user, limit_to=10):
+		profile 	= user.profile
+		following 	= profile.get_following()
+		qs = self.get_queryset().exclude(user__in=following).exclude(id=profile.id)[:limit_to]
+
+		return qs
 
 # Create your models here.
 class UserProfile(models.Model):
