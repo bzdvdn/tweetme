@@ -50,7 +50,7 @@ class TweetDetailView(DetailView):
 		id = self.kwargs.get("id")
 		return Tweet.objects.get(id=id)
 
-class TweetListView(ListView):
+class TweetListView(LoginRequiredMixin, ListView):
 	template_name 	= "list_view.html"
 	
 	def get_queryset(self, *args, **kwargs):
